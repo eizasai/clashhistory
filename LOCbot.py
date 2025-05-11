@@ -53,6 +53,7 @@ async def setup(ctx, *, arg):
             await ctx.send("⚠️ Invalid format. Use: `!setup player_tag: #YG8082JP`")
         except CurlResponseError403:
             await ctx.send("⚠️ Internal API key or server IP issue")
+            print(response.content)
         except DuplicateTagError:
             await ctx.send("⚠️ Tag already registered")
     else:

@@ -5,6 +5,8 @@ PYPPETEER_CHROMIUM_REVISION = '1263111'
 os.environ['PYPPETEER_CHROMIUM_REVISION'] = PYPPETEER_CHROMIUM_REVISION
 from pyppeteer import launch
 
+from pyppeteer.launcher import Launcher
+' '.join(Launcher().cmd)
 clashperk_war_history_url = "https://clashperk.com/web/players/%s/wars"
 
 async def format_war_stats(stats):

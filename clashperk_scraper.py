@@ -31,7 +31,7 @@ def get_player_war_data(player_tag):
     #     print("Timeout waiting for page to load.")
     # soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-    r = session.get("https://clashperk.com/web/players/%23YG8082JP/wars")
+    r = session.get(clashperk_war_history_url % player_tag.replace("#", "%23"))
     r.html.render(sleep=15, timeout=30)
     soup = BeautifulSoup(r.html.html, 'html.parser')
 

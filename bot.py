@@ -4,8 +4,13 @@ import sqlite3
 import json
 from database_manager import commit_close, commit_close_with_parameters, get_user_by_discord_id
 from discord.ext import commands
+import os
 
-clash_api_token = open('apikeyclash.txt', 'r').read()
+if os.getlogin == "eizak":
+    clash_api_token = open('apikeyclash.txt', 'r').read()
+else:
+    clash_api_token = os.environ.get("clash_key")
+    
 headers = {
     "Authorization": f"Bearer {clash_api_token}"
 }

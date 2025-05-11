@@ -7,9 +7,14 @@ from bot_errors import CurlResponseError403, DuplicateTagError, NoPlayerTagsErro
 from bot import Bot
 import discord.ext
 from clashperk_scraper import get_player_war_data
+import os
 
-API_TOKEN = open('apikeydiscord.txt', 'r').read()
-clash_api_token = open('apikeyclash.txt', 'r').read()
+if os.getlogin() == "eizak":
+    API_TOKEN = open('apikeydiscord.txt', 'r').read()
+    clash_api_token = open('apikeyclash.txt', 'r').read()
+else:
+    API_TOKEN = os.environ.get("discord_key")
+    clash_api_token = os.environ.get("clash_key")
 
 headers = {
     "Authorization": f"Bearer {clash_api_token}"
@@ -70,7 +75,7 @@ async def war_stats(ctx, *, arg):
         except NoPlayerTagsError:
             await ctx.send(f"⚠️ {member.name} has no registered player tags")
     elif arg.startswith("player_tag:"):
-        get_player_war_data("#YG8082JP")
+        await get_player_war_data("#YG8082JP")
 
 try:
     bot.run(API_TOKEN)

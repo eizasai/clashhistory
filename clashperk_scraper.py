@@ -36,7 +36,28 @@ async def format_war_stats(stats):
     return "\n".join(lines)
 
 async def fetch_rendered_html(url):
-    browser = await launch(headless=True, args=['--no-sandbox'])
+    browser = await launch({
+    'headless': True,
+    'executablePath': os.environ.get("GOOGLE_CHROM_SHIM", None),
+    'args': [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--no-zygote',
+        '--single-process',
+        '--no-first-run',
+        '--no-default-browser-check',
+        '--disable-background-networking',
+        '--disable-extensions',
+        '--disable-sync',
+        '--metrics-recording-only',
+        '--mute-audio',
+        '--hide-scrollbars',
+        '--disable-notifications',
+        '--window-size=1280,1696'
+    ]
+    })
     page = await browser.newPage()
     await page.goto(url, {'waitUntil': 'networkidle2'})
     content = await page.content()

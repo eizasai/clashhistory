@@ -6,15 +6,23 @@ import json
 from bot_errors import CurlResponseError403, DuplicateTagError, NoPlayerTagsError
 from bot import Bot
 import discord.ext
-from clashperk_scraper import get_player_war_data
 import os
 
 if os.environ.get("deployed", "development") == "deployment":
     API_TOKEN = os.environ.get("discord_key")
     clash_api_token = os.environ.get("clash_key")
+    os.environ['http_proxy'] = os.getenv('NSCRIPTIOD_HTTP')
+    os.environ['https_proxy'] = os.getenv('NSCRIPTIOD_HTTP')
+    r = requests.get('https://ipinfo.io/ip')
+    remoteIp=r.text
+    print('IP: '+remoteIp)
 else:
     API_TOKEN = open('apikeydiscord.txt', 'r').read()
     clash_api_token = open('apikeyclash.txt', 'r').read()
+
+from clashperk_scraper import get_player_war_data
+
+
 
 headers = {
     "Authorization": f"Bearer {clash_api_token}"

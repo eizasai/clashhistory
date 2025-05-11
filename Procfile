@@ -1,1 +1,1 @@
-worker: python LOCbot.py
+web: python LOCbot.py

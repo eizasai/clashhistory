@@ -3,3 +3,4 @@ requests
 bs4
 requests-html
 lxml[html_clean]
+pyppeteer

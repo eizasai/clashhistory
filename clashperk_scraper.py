@@ -5,10 +5,6 @@ PYPPETEER_CHROMIUM_REVISION = '1263111'
 os.environ['PYPPETEER_CHROMIUM_REVISION'] = PYPPETEER_CHROMIUM_REVISION
 from pyppeteer import launch
 
-from requests_html import AsyncHTMLSession
-
-session = AsyncHTMLSession()
-
 clashperk_war_history_url = "https://clashperk.com/web/players/%s/wars"
 
 async def format_war_stats(stats):
@@ -86,11 +82,8 @@ async def average_player_war_data(war_data):
     return averaged_data
 
 async def get_player_war_data(player_tag):
-    # r = session.get(clashperk_war_history_url % player_tag.replace("#", "%23"))
-    # r.html.arender(sleep=15, timeout=30)
     url = clashperk_war_history_url % player_tag.replace("#", "%23")
     html = await fetch_rendered_html(url)
-    # soup = BeautifulSoup(r.html.html, 'html.parser')
     soup = BeautifulSoup(html, 'html.parser')
     history = soup.find('tbody', class_="MuiTableBody-root mui-y6j1my").find_all('tr', class_="MuiTableRow-root mui-wcx5if")
     war_attacks = []

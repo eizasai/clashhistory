@@ -93,13 +93,13 @@ async def war_stats(ctx, *, arg):
     elif arg.startswith("player_tag:"):
         try:
             tag = arg.split(":", 1)[1].strip().strip("'\"")
-            # print(f"Compiling data for tag:{tag}")
-            # response = requests.get(clash_api_url % tag.replace("#", "%23"), headers=headers)
-            # print(f"COC API status code: {response.status_code}")
-            # if response.status_code == 403:
-            #     raise CurlResponseError403
-            # elif response.status_code != 200:
-            #     raise IndexError
+            print(f"Compiling data for tag:{tag}")
+            response = requests.get(clash_api_url % tag.replace("#", "%23"), headers=headers)
+            print(f"COC API status code: {response.status_code}")
+            if response.status_code == 403:
+                raise CurlResponseError403
+            elif response.status_code != 200:
+                raise IndexError
             data = await get_player_war_data(tag)
             await ctx.send(f"Recent War data for tag:{tag}\n" + data)
         except IndexError:

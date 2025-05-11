@@ -4,15 +4,6 @@ import os
 PYPPETEER_CHROMIUM_REVISION = '1263111'
 os.environ['PYPPETEER_CHROMIUM_REVISION'] = PYPPETEER_CHROMIUM_REVISION
 from pyppeteer import launch
-import asyncio
-from pyppeteer import chromium_downloader
-
-
-chromium_downloader.download_chromium()
-
-# During startup
-# asyncio.get_event_loop().run_until_complete(install_chromium())
-
 
 clashperk_war_history_url = "https://clashperk.com/web/players/%s/wars"
 
@@ -45,27 +36,7 @@ async def format_war_stats(stats):
     return "\n".join(lines)
 
 async def fetch_rendered_html(url):
-    browser = await launch({
-        'headless': True,
-        'args': [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu',
-            '--no-zygote',
-            '--single-process',
-            '--no-first-run',
-            '--no-default-browser-check',
-            '--disable-background-networking',
-            '--disable-extensions',
-            '--disable-sync',
-            '--metrics-recording-only',
-            '--mute-audio',
-            '--hide-scrollbars',
-            '--disable-notifications',
-            '--window-size=1280,1696'
-        ]
-    })
+    browser = await launch(headless=True, args=['--no-sandbox'])
     page = await browser.newPage()
     await page.goto(url, {'waitUntil': 'networkidle2'})
     content = await page.content()

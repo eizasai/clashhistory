@@ -51,4 +51,4 @@ def get_player_war_data(player_tag):
             attack_count += 1
     print(war_attacks)
 
-get_player_war_data("#YG8082JP")
+# get_player_war_data("#YG8082JP")

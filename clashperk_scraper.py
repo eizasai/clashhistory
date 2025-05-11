@@ -7,8 +7,8 @@ from pyppeteer import launch
 import asyncio
 from pyppeteer import chromium_downloader
 
-async def install_chromium():
-    await chromium_downloader.download_chromium()
+def install_chromium():
+    chromium_downloader.download_chromium()
 
 # During startup
 asyncio.get_event_loop().run_until_complete(install_chromium())

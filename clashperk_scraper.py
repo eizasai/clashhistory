@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
 import matplotlib.pyplot as plt
 import os
-# PYPPETEER_CHROMIUM_REVISION = '1263111'
-# os.environ['PYPPETEER_CHROMIUM_REVISION'] = PYPPETEER_CHROMIUM_REVISION
+PYPPETEER_CHROMIUM_REVISION = '1263111'
+os.environ['PYPPETEER_CHROMIUM_REVISION'] = PYPPETEER_CHROMIUM_REVISION
 from pyppeteer import launch
 
 clashperk_war_history_url = "https://clashperk.com/web/players/%s/wars"

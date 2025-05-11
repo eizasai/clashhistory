@@ -4,7 +4,9 @@ import os
 PYPPETEER_CHROMIUM_REVISION = '1263111'
 os.environ['PYPPETEER_CHROMIUM_REVISION'] = PYPPETEER_CHROMIUM_REVISION
 from pyppeteer import launch
+from requests_html import AsyncHTMLSession
 
+asession = AsyncHTMLSession()
 clashperk_war_history_url = "https://clashperk.com/web/players/%s/wars"
 
 async def format_war_stats(stats):
@@ -36,28 +38,31 @@ async def format_war_stats(stats):
     return "\n".join(lines)
 
 async def fetch_rendered_html(url):
-    browser = await launch({
-    'headless': True,
-    'executablePath': os.environ.get("GOOGLE_CHROM_SHIM", None),
-    'args': [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu',
-        '--no-zygote',
-        '--single-process',
-        '--no-first-run',
-        '--no-default-browser-check',
-        '--disable-background-networking',
-        '--disable-extensions',
-        '--disable-sync',
-        '--metrics-recording-only',
-        '--mute-audio',
-        '--hide-scrollbars',
-        '--disable-notifications',
-        '--window-size=1280,1696'
-    ]
-    })
+    if os.environ.get("deployed", "development") == "deployment":
+        browser = await launch({
+        'headless': True,
+        'executablePath': os.environ.get("GOOGLE_CHROM_SHIM", None),
+        'args': [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-gpu',
+            '--no-zygote',
+            '--single-process',
+            '--no-first-run',
+            '--no-default-browser-check',
+            '--disable-background-networking',
+            '--disable-extensions',
+            '--disable-sync',
+            '--metrics-recording-only',
+            '--mute-audio',
+            '--hide-scrollbars',
+            '--disable-notifications',
+            '--window-size=1280,1696'
+        ]
+        })
+    else:
+        browser = await launch(headless=True, args=['--no-sandbox'])
     page = await browser.newPage()
     await page.goto(url, {'waitUntil': 'networkidle2'})
     content = await page.content()
@@ -104,8 +109,12 @@ async def average_player_war_data(war_data):
 
 async def get_player_war_data(player_tag):
     url = clashperk_war_history_url % player_tag.replace("#", "%23")
-    html = await fetch_rendered_html(url)
-    soup = BeautifulSoup(html, 'html.parser')
+    # html = await fetch_rendered_html(url)
+    # soup = BeautifulSoup(html, 'html.parser')
+    r = await asession.get(url)
+    await r.html.arender(sleep=5, timeout=30)
+    soup = BeautifulSoup(r.html.html, 'html.parser')
+
     history = soup.find('tbody', class_="MuiTableBody-root mui-y6j1my").find_all('tr', class_="MuiTableRow-root mui-wcx5if")
     war_attacks = []
     for row in history:

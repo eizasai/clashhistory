@@ -6,11 +6,11 @@ from database_manager import commit_close, commit_close_with_parameters, get_use
 from discord.ext import commands
 import os
 
-if os.getlogin == "eizak":
-    clash_api_token = open('apikeyclash.txt', 'r').read()
-else:
+if os.environ.get("deployed", "development") == "deployment":
     clash_api_token = os.environ.get("clash_key")
-    
+else:
+    clash_api_token = open('apikeyclash.txt', 'r').read()
+
 headers = {
     "Authorization": f"Bearer {clash_api_token}"
 }

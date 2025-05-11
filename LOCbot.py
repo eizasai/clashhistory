@@ -22,8 +22,6 @@ else:
 
 from clashperk_scraper import get_player_war_data
 
-
-
 headers = {
     "Authorization": f"Bearer {clash_api_token}"
 }

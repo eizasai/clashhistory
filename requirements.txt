@@ -3,5 +3,5 @@ requests
 bs4
 requests-html
 lxml[html_clean]
-pyppeteer
+pyppeteer==1.0.2
 matplotlib

@@ -7,11 +7,11 @@ from pyppeteer import launch
 import asyncio
 from pyppeteer import chromium_downloader
 
-def install_chromium():
-    chromium_downloader.download_chromium()
+
+chromium_downloader.download_chromium()
 
 # During startup
-asyncio.get_event_loop().run_until_complete(install_chromium())
+# asyncio.get_event_loop().run_until_complete(install_chromium())
 
 
 clashperk_war_history_url = "https://clashperk.com/web/players/%s/wars"

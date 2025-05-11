@@ -47,7 +47,6 @@ async def format_war_stats(stats):
 async def fetch_rendered_html(url):
     browser = await launch({
         'headless': True,
-        'executablePath': '/app/.apt/usr/bin/google-chrome',
         'args': [
             '--no-sandbox',
             '--disable-setuid-sandbox',

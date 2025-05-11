@@ -1,0 +1,78 @@
+import discord
+import discord.ext.commands
+from database_manager import commit_close, commit_close_with_parameters, get_user_by_discord_id
+import requests
+import json
+from bot_errors import CurlResponseError403, DuplicateTagError, NoPlayerTagsError
+from bot import Bot
+import discord.ext
+from clashperk_scraper import get_player_war_data
+
+API_TOKEN = open('apikeydiscord.txt', 'r').read()
+clash_api_token = open('apikeyclash.txt', 'r').read()
+
+headers = {
+    "Authorization": f"Bearer {clash_api_token}"
+}
+clash_api_url = "https://api.clashofclans.com/v1/players/%s"
+
+intents = discord.Intents.default()
+intents.message_content = True
+intents.members = True
+
+bot = Bot(command_prefix="!", intents=intents)
+
+@bot.command()
+async def setup(ctx, *, arg):
+    print(f"!setup command from {ctx.author}")
+    if arg.startswith("player_tag:"):
+        try:
+            tag = arg.split(":", 1)[1].strip().strip("'\"")
+            response = requests.get(clash_api_url % tag.replace("#", "%23"), headers=headers)
+            print(f"COC API status code: {response.status_code}")
+            if response.status_code != 200:
+                raise CurlResponseError403
+            discord_id = ctx.author.id
+            tags = json.loads(get_user_by_discord_id(discord_id)[1])
+            if tag in tags:
+                raise DuplicateTagError
+            tags.append(tag)
+            commit_close_with_parameters("""
+                UPDATE users
+                SET player_tag = ?
+                WHERE discord_id = ?
+                """, (json.dumps(tags), discord_id))
+            print(tags)
+            await ctx.send(f"✅ Received player tag: `{tag}`")
+        except IndexError:
+            await ctx.send("⚠️ Invalid format. Use: `!setup player_tag: #YG8082JP`")
+        except CurlResponseError403:
+            await ctx.send("⚠️ Internal API key or server IP issue")
+        except DuplicateTagError:
+            await ctx.send("⚠️ Tag already registered")
+    else:
+        await ctx.send("⚠️ Expected format: `!setup player_tag: #YG8082JP`")
+    
+@bot.command()
+async def war_stats(ctx, *, arg):
+    print(f"!war_stats command from {ctx.author}")
+    if arg.startswith("user:"):
+        try:
+            discord_id = arg.split(":", 1)[1].strip().strip("'\"")[2:-1]
+            member = await bot.fetch_user(discord_id)
+            tags = json.loads(get_user_by_discord_id(discord_id)[1])
+            if len(tags) == 0:
+                raise NoPlayerTagsError
+        except discord.ext.commands.errors.CommandInvokeError:
+            await ctx.send(f"⚠️ Invalid Discord ID")
+        except IndexError:
+            await ctx.send(f"⚠️ Invalid format. Use: `!war_stats user: <@{ctx.author.id}>`")
+        except NoPlayerTagsError:
+            await ctx.send(f"⚠️ {member.name} has no registered player tags")
+    elif arg.startswith("player_tag:"):
+        get_player_war_data("#YG8082JP")
+
+try:
+    bot.run(API_TOKEN)
+except KeyboardInterrupt:
+    bot.close()

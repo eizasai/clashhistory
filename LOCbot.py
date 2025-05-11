@@ -1,9 +1,9 @@
 import discord
 import discord.ext.commands
-from database_manager import commit_close, commit_close_with_parameters, get_user_by_discord_id
+from database_manager import commit_close, commit_close_with_parameters, get_user_by_discord_id, check_user_by_player_tag
 import requests
 import json
-from bot_errors import CurlResponseError403, DuplicateTagError, NoPlayerTagsError
+from bot_errors import CurlResponseError403, DuplicateTagError, NoPlayerTagsError, ClaimedTagError
 from bot import Bot
 import discord.ext
 import os
@@ -43,12 +43,16 @@ async def setup(ctx, *, arg):
             tag = arg.split(":", 1)[1].strip().strip("'\"")
             response = requests.get(clash_api_url % tag.replace("#", "%23"), headers=headers)
             print(f"COC API status code: {response.status_code}")
-            if response.status_code != 200:
+            if response.status_code == 403:
                 raise CurlResponseError403
+            elif response.status_code != 200:
+                raise IndexError
             discord_id = ctx.author.id
             tags = json.loads(get_user_by_discord_id(discord_id)[1])
             if tag in tags:
                 raise DuplicateTagError
+            if check_user_by_player_tag(tag):
+                raise ClaimedTagError
             tags.append(tag)
             commit_close_with_parameters("""
                 UPDATE users
@@ -58,18 +62,20 @@ async def setup(ctx, *, arg):
             print(tags)
             await ctx.send(f"✅ Received player tag: `{tag}`")
         except IndexError:
-            await ctx.send("⚠️ Invalid format. Use: `!setup player_tag: #YG8082JP`")
+            await ctx.send("⚠️ Invalid format or tag does not exist. Use: `!setup player_tag: #YG8082JP`")
         except CurlResponseError403:
             await ctx.send("⚠️ Internal API key or server IP issue")
             print(response.content)
         except DuplicateTagError:
-            await ctx.send("⚠️ Tag already registered")
+            await ctx.send("⚠️ Tag already registered to you")
+        except ClaimedTagError:
+            await ctx.send("⚠️ Tag already registered to another user")
     else:
         await ctx.send("⚠️ Expected format: `!setup player_tag: #YG8082JP`")
     
 @bot.command()
 async def war_stats(ctx, *, arg):
-    print(f"!war_stats command from {ctx.author}")
+    print(f"!war_stats command from {ctx.author}, command:{arg}")
     if arg.startswith("user:"):
         try:
             discord_id = arg.split(":", 1)[1].strip().strip("'\"")[2:-1]
@@ -77,6 +83,9 @@ async def war_stats(ctx, *, arg):
             tags = json.loads(get_user_by_discord_id(discord_id)[1])
             if len(tags) == 0:
                 raise NoPlayerTagsError
+            for tag in tags:
+                data = await get_player_war_data(tag)
+                await ctx.send(f"Recent War data for tag:{tag}\n" + data)
         except discord.ext.commands.errors.CommandInvokeError:
             await ctx.send(f"⚠️ Invalid Discord ID")
         except IndexError:
@@ -84,7 +93,22 @@ async def war_stats(ctx, *, arg):
         except NoPlayerTagsError:
             await ctx.send(f"⚠️ {member.name} has no registered player tags")
     elif arg.startswith("player_tag:"):
-        await get_player_war_data("#YG8082JP")
+        try:
+            tag = arg.split(":", 1)[1].strip().strip("'\"")
+            print(f"Compiling data for tag:{tag}")
+            response = requests.get(clash_api_url % tag.replace("#", "%23"), headers=headers)
+            print(f"COC API status code: {response.status_code}")
+            if response.status_code == 403:
+                raise CurlResponseError403
+            elif response.status_code != 200:
+                raise IndexError
+            data = await get_player_war_data(tag)
+            await ctx.send(f"Recent War data for tag:{tag}\n" + data)
+        except IndexError:
+            await ctx.send("⚠️ Invalid format or tag does not exist. Use: `!setup player_tag: #YG8082JP`")
+        except CurlResponseError403:
+            await ctx.send("⚠️ Internal API key or server IP issue")
+            print(response.content)
 
 try:
     bot.run(API_TOKEN)

@@ -14,7 +14,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 GOOGLE_CHROME_PATH = '/app/.chrome-for-testing/chrome-linux64/chrome'
-CHROMEDRIVER_PATH = '/app/.chrome-for-testing/chromedriver-linux64/chromedrive'
+CHROMEDRIVER_PATH = '/app/.chrome-for-testing/chromedriver-linux64/chromedriver'
 
 clashperk_war_history_url = "https://clashperk.com/web/players/%s/wars"
 

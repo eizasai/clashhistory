@@ -1,11 +1,17 @@
 from bs4 import BeautifulSoup
 import matplotlib.pyplot as plt
 import os
-PYPPETEER_CHROMIUM_REVISION = '1263111'
-os.environ['PYPPETEER_CHROMIUM_REVISION'] = PYPPETEER_CHROMIUM_REVISION
-# os.environ['PYPPETEER_SKIP_CHROMIUM_DOWNLOAD'] = 'true'
+import time
+# PYPPETEER_CHROMIUM_REVISION = '1263111'
+# os.environ['PYPPETEER_CHROMIUM_REVISION'] = PYPPETEER_CHROMIUM_REVISION
+# # os.environ['PYPPETEER_SKIP_CHROMIUM_DOWNLOAD'] = 'true'
 
-from pyppeteer import launch
+# from pyppeteer import launch
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 clashperk_war_history_url = "https://clashperk.com/web/players/%s/wars"
 
@@ -38,11 +44,19 @@ async def format_war_stats(stats):
     return "\n".join(lines)
 
 async def fetch_rendered_html(url):
-    browser = await launch(headless=True, args=['--no-sandbox'])
-    page = await browser.newPage()
-    await page.goto(url, {'waitUntil': 'networkidle2', 'timeout':0})
-    content = await page.content()
-    await browser.close()
+    options = Options()
+    options.add_argument("--headless")
+    driver = webdriver.Chrome(options=options)
+    driver.get(url)
+    time.sleep(3)
+    content = driver.page_source
+    print(content)
+    driver.quit()
+    # browser = await launch(headless=True, args=['--no-sandbox'])
+    # page = await browser.newPage()
+    # await page.goto(url, {'waitUntil': 'networkidle2', 'timeout':0})
+    # content = await page.content()
+    # await browser.close()
     return content
 
 async def average_player_war_data(war_data):
@@ -113,5 +127,5 @@ async def get_player_war_data(player_tag):
     print(f"Formatted data for tag:{player_tag}")
     return formatted_data
 
-# result = get_player_war_data("#YG8082JP")
-# print(result)
+result = get_player_war_data("#YG8082JP")
+print(result)

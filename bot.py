@@ -4,18 +4,6 @@ import sqlite3
 import json
 from database_manager import commit_close, commit_close_with_parameters, get_user_by_discord_id
 from discord.ext import commands
-import os
-
-if os.environ.get("deployed", "development") == "deployment":
-    clash_api_token = os.environ.get("clash_key")
-else:
-    clash_api_token = open('apikeyclash.txt', 'r').read()
-
-headers = {
-    "Authorization": f"Bearer {clash_api_token}"
-}
-clash_api_url = "https://api.clashofclans.com/v1/players/%s"
-clashperk_war_history_url = "https://clashperk.com/web/players/%s/wars"
 
 class Bot(commands.Bot):
     server_rules_channel = 1370566880934367392

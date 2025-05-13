@@ -46,6 +46,10 @@ async def format_war_stats(stats):
 async def fetch_rendered_html(url):
     options = Options()
     options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-features=VizDisplayCompositor")
     driver = webdriver.Chrome(options=options)
     driver.get(url)
     time.sleep(3)

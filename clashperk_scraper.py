@@ -12,6 +12,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+GOOGLE_CHROME_PATH = '/app/.chrome-for-testing/chrome-linux64/chrome'
+CHROMEDRIVER_PATH = '/app/.chrome-for-testing/chromedriver-linux64/chromedrive'
 
 clashperk_war_history_url = "https://clashperk.com/web/players/%s/wars"
 
@@ -44,17 +46,28 @@ async def format_war_stats(stats):
     return "\n".join(lines)
 
 async def fetch_rendered_html(url):
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--disable-features=VizDisplayCompositor")
-    driver = webdriver.Chrome(options=options)
+    
+    if os.environ.get("deployed", "development") == "deployment":
+        options = webdriver.ChromeOptions()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--disable-features=VizDisplayCompositor")
+        options.binary_location = GOOGLE_CHROME_PATH
+        driver = webdriver.Chrome(execution_path=CHROMEDRIVER_PATH, chrome_options=options)
+    else:
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--disable-features=VizDisplayCompositor")
+        driver = webdriver.Chrome(options=options)
+    
     driver.get(url)
     time.sleep(3)
     content = driver.page_source
-    print(content)
     driver.quit()
     # browser = await launch(headless=True, args=['--no-sandbox'])
     # page = await browser.newPage()

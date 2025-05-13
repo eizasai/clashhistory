@@ -59,7 +59,7 @@ async def fetch_rendered_html(url):
         options.add_argument("--disable-features=VizDisplayCompositor")
         # options.binary_location = GOOGLE_CHROME_PATH
         # service = Service(executable_path=CHROMEDRIVER_PATH)
-        driver = webdriver.Chrome(service=service, options=options)
+        driver = webdriver.Chrome(options=options)
     else:
         options = Options()
         options.add_argument("--headless")

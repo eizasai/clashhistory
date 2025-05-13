@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
 import matplotlib.pyplot as plt
 import os
-# PYPPETEER_CHROMIUM_REVISION = '1263111'
-# os.environ['PYPPETEER_CHROMIUM_REVISION'] = PYPPETEER_CHROMIUM_REVISION
-os.environ['PYPPETEER_SKIP_CHROMIUM_DOWNLOAD'] = 'true'
+PYPPETEER_CHROMIUM_REVISION = '1263111'
+os.environ['PYPPETEER_CHROMIUM_REVISION'] = PYPPETEER_CHROMIUM_REVISION
+# os.environ['PYPPETEER_SKIP_CHROMIUM_DOWNLOAD'] = 'true'
 
 from pyppeteer import launch
 

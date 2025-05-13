@@ -40,7 +40,7 @@ async def format_war_stats(stats):
 async def fetch_rendered_html(url):
     browser = await launch(headless=True, args=['--no-sandbox'])
     page = await browser.newPage()
-    await page.goto(url, {'waitUntil': 'load', 'timeout':0})
+    await page.goto(url, {'waitUntil': 'networkidle2', 'timeout':0})
     content = await page.content()
     await browser.close()
     return content

@@ -1,2 +1,2 @@
-web: bin/nscriptio curl
-web: python LOCbot.py
+worker: bin/nscriptio curl
+worker: python LOCbot.py

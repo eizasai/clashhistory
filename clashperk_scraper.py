@@ -56,7 +56,7 @@ async def fetch_rendered_html(url):
             "--disable-web-security",
         ])
         page = await browser.new_page()
-        await page.goto(url, wait_until="networkidle")
+        await page.goto(url, timeout=3)
         content = await page.content()
         await browser.close()
         return content
@@ -94,7 +94,7 @@ async def fetch_rendered_html(url):
     # await page.goto(url, {'waitUntil': 'networkidle2', 'timeout':0})
     # content = await page.content()
     # await browser.close()
-    
+
     return content
 
 async def average_player_war_data(war_data):

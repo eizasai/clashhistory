@@ -94,6 +94,7 @@ async def fetch_rendered_html(url):
     # await page.goto(url, {'waitUntil': 'networkidle2', 'timeout':0})
     # content = await page.content()
     # await browser.close()
+    
     return content
 
 async def average_player_war_data(war_data):

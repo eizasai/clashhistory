@@ -50,16 +50,16 @@ async def fetch_rendered_html(url):
     
     if os.environ.get("deployed", "development") == "deployment":
         options = Options()
-        # user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
-        # options.add_argument(f'user-agent={user_agent}')
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--disable-gpu")
         options.add_argument("--disable-features=VizDisplayCompositor")
-        # options.binary_location = GOOGLE_CHROME_PATH
-        # service = Service(executable_path=CHROMEDRIVER_PATH)
-        driver = webdriver.Chrome(options=options)
+        options.add_argument("--disable-web-security")
+        options.add_argument("--remote-allow-origins=*")
+        options.binary_location = GOOGLE_CHROME_PATH
+        service = Service(executable_path=CHROMEDRIVER_PATH)
+        driver = webdriver.Chrome(service=service, options=options)
     else:
         options = Options()
         options.add_argument("--headless")
@@ -67,6 +67,8 @@ async def fetch_rendered_html(url):
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--disable-gpu")
         options.add_argument("--disable-features=VizDisplayCompositor")
+        options.add_argument("--disable-web-security")
+        options.add_argument("--remote-allow-origins=*")
         driver = webdriver.Chrome(options=options)
     
     driver.get(url)

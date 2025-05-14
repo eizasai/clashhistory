@@ -1,3 +1,3 @@
-release: python -m playwright install chromium
+release: python -m playwright install
 worker: bin/nscriptio curl
 worker: python LOCbot.py

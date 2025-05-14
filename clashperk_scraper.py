@@ -57,6 +57,8 @@ async def fetch_rendered_html(url):
         options.add_argument("--disable-features=VizDisplayCompositor")
         options.add_argument("--disable-web-security")
         options.add_argument("--remote-allow-origins=*")
+        options.add_argument("--remote-debugging-port=9222")
+        options.add_argument("--remote-debugging-address=0.0.0.0")
         options.binary_location = GOOGLE_CHROME_PATH
         service = Service(executable_path=CHROMEDRIVER_PATH)
         driver = webdriver.Chrome(service=service, options=options)

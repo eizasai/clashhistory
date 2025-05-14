@@ -1,8 +1,5 @@
 discord
 requests
 bs4
-selenium
-requests-html
-lxml[html_clean]
-pyppeteer
+playwright
 matplotlib

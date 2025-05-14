@@ -2,19 +2,20 @@ from bs4 import BeautifulSoup
 import matplotlib.pyplot as plt
 import os
 import time
+from playwright.async_api import async_playwright
 # PYPPETEER_CHROMIUM_REVISION = '1263111'
 # os.environ['PYPPETEER_CHROMIUM_REVISION'] = PYPPETEER_CHROMIUM_REVISION
 # # os.environ['PYPPETEER_SKIP_CHROMIUM_DOWNLOAD'] = 'true'
 
 # from pyppeteer import launch
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-GOOGLE_CHROME_PATH = '/app/.chrome-for-testing/chrome-linux64/chrome'
-CHROMEDRIVER_PATH = '/app/.chrome-for-testing/chromedriver-linux64/chromedriver'
+# from selenium import webdriver
+# from selenium.webdriver.chrome.options import Options
+# from selenium.webdriver.chrome.service import Service
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.support import expected_conditions as EC
+# GOOGLE_CHROME_PATH = '/app/.chrome-for-testing/chrome-linux64/chrome'
+# CHROMEDRIVER_PATH = '/app/.chrome-for-testing/chromedriver-linux64/chromedriver'
 
 clashperk_war_history_url = "https://clashperk.com/web/players/%s/wars"
 
@@ -47,36 +48,47 @@ async def format_war_stats(stats):
     return "\n".join(lines)
 
 async def fetch_rendered_html(url):
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True, args=[
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--disable-web-security",
+        ])
+        page = await browser.new_page()
+        await page.goto(url, wait_until="networkidle")
+        content = await page.content()
+        await browser.close()
+        return content
+    # if os.environ.get("deployed", "development") == "deployment":
+    #     options = Options()
+    #     options.add_argument("--headless")
+    #     options.add_argument("--no-sandbox")
+    #     options.add_argument("--disable-dev-shm-usage")
+    #     options.add_argument("--disable-gpu")
+    #     options.add_argument("--disable-features=VizDisplayCompositor")
+    #     options.add_argument("--disable-web-security")
+    #     options.add_argument("--remote-allow-origins=*")
+    #     options.add_argument("--remote-debugging-port=9222")
+    #     options.add_argument("--remote-debugging-address=0.0.0.0")
+    #     options.binary_location = GOOGLE_CHROME_PATH
+    #     service = Service(executable_path=CHROMEDRIVER_PATH)
+    #     driver = webdriver.Chrome(service=service, options=options)
+    # else:
+    #     options = Options()
+    #     options.add_argument("--headless")
+    #     options.add_argument("--no-sandbox")
+    #     options.add_argument("--disable-dev-shm-usage")
+    #     options.add_argument("--disable-gpu")
+    #     options.add_argument("--disable-features=VizDisplayCompositor")
+    #     options.add_argument("--disable-web-security")
+    #     options.add_argument("--remote-allow-origins=*")
+    #     driver = webdriver.Chrome(options=options)
     
-    if os.environ.get("deployed", "development") == "deployment":
-        options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--disable-features=VizDisplayCompositor")
-        options.add_argument("--disable-web-security")
-        options.add_argument("--remote-allow-origins=*")
-        options.add_argument("--remote-debugging-port=9222")
-        options.add_argument("--remote-debugging-address=0.0.0.0")
-        options.binary_location = GOOGLE_CHROME_PATH
-        service = Service(executable_path=CHROMEDRIVER_PATH)
-        driver = webdriver.Chrome(service=service, options=options)
-    else:
-        options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--disable-features=VizDisplayCompositor")
-        options.add_argument("--disable-web-security")
-        options.add_argument("--remote-allow-origins=*")
-        driver = webdriver.Chrome(options=options)
-    
-    driver.get(url)
-    time.sleep(3)
-    content = driver.page_source
-    driver.quit()
+    # driver.get(url)
+    # time.sleep(3)
+    # content = driver.page_source
+    # driver.quit()
     # browser = await launch(headless=True, args=['--no-sandbox'])
     # page = await browser.newPage()
     # await page.goto(url, {'waitUntil': 'networkidle2', 'timeout':0})
@@ -152,5 +164,5 @@ async def get_player_war_data(player_tag):
     print(f"Formatted data for tag:{player_tag}")
     return formatted_data
 
-result = get_player_war_data("#YG8082JP")
-print(result)
+# result = get_player_war_data("#YG8082JP")
+# print(result)

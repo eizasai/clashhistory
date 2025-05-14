@@ -8,7 +8,9 @@ from bot import Bot
 import discord.ext
 import os
 
+
 if os.environ.get("deployed", "development") == "deployment":
+    os.system("python -m playwright install chromium")
     API_TOKEN = os.environ.get("discord_key")
     clash_api_token = os.environ.get("clash_key")
     os.environ['http_proxy'] = os.getenv('NSCRIPTIOD_HTTP')

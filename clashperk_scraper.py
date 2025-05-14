@@ -56,7 +56,7 @@ async def fetch_rendered_html(url):
             "--disable-web-security",
         ])
         page = await browser.new_page()
-        await page.goto(url, timeout=3)
+        await page.goto(url, timeout=3000)
         content = await page.content()
         await browser.close()
         return content
